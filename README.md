@@ -32,7 +32,7 @@ The AI evaluates the interview based on:
 
 ## 🌐 Demo UI Screenshot
 
-> _Include a screenshot here if available_
+![WhatsApp Image 2025-04-16 at 17 22 54_00a0175e](https://github.com/user-attachments/assets/543dcbc9-e8fd-493c-a060-1a3ebe806633) ![image](https://github.com/user-attachments/assets/d50ab1f8-b16e-4827-874c-9c312072d3d2)
 
 ## 📦 Requirements
 
