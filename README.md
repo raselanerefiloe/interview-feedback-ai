@@ -46,7 +46,7 @@ Install dependencies:
 ```bash
 pip install flask openai-whisper
 
-git clone https://github.com/yourusername/interview-feedback-ai.git
+git clone https://github.com/raselanerefiloe/interview-feedback-ai.git
 cd interview-feedback-ai
 python app.py
 
