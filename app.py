@@ -19,6 +19,7 @@ def home():
 def upload_audio():
     file = request.files["file"]
     filepath = os.path.join(AUDIO_DIR, file.filename)
+    os.makedirs(os.path.dirname(filepath), exist_ok=True)
     file.save(filepath)
 
     model = whisper.load_model("base")
