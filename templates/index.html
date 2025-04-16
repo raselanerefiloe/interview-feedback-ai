@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Interview Feedback Tool</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Framer Motion CDN -->
+    <script src="https://unpkg.com/framer-motion/dist/framer-motion.umd.js"></script>
+
+    <!-- Puter.js -->
+    <script src="https://js.puter.com/v2/"></script>
+  </head>
+  <body
+    class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white font-sans min-h-screen flex items-center justify-center p-6"
+  >
+    <div
+      class="w-full max-w-3xl bg-gray-800 shadow-2xl rounded-2xl p-8 space-y-8 border border-gray-700"
+    >
+      <h1 class="text-3xl font-bold text-center text-teal-400">
+        🎤 Interview Feedback Tool
+      </h1>
+
+      <div class="flex flex-col items-center space-y-4">
+        <input
+          type="file"
+          id="audioFile"
+          class="file:bg-teal-500 file:text-white file:px-4 file:py-2 file:rounded-lg file:border-0 file:cursor-pointer text-sm text-gray-300"
+        />
+        <button
+          onclick="uploadAndTranscribe()"
+          class="bg-teal-500 hover:bg-teal-600 transition-all duration-200 px-6 py-2 rounded-lg shadow-md font-semibold"
+        >
+          Upload & Analyze
+        </button>
+      </div>
+
+      <motion-div
+        id="outputSection"
+        class="space-y-6"
+        initial="hidden"
+        animate="visible"
+        variants="containerVariants"
+      >
+        <div>
+          <h3 class="text-xl font-semibold text-teal-300 mb-2">
+            📝 Transcript
+          </h3>
+          <pre
+            id="transcript"
+            class="bg-gray-900 p-4 rounded-lg overflow-x-auto max-h-60 whitespace-pre-wrap"
+          >
+Waiting for upload...</pre
+          >
+        </div>
+
+        <div>
+          <h3 class="text-xl font-semibold text-teal-300 mb-2">📋 Feedback</h3>
+          <pre
+            id="feedback"
+            class="bg-gray-900 p-4 rounded-lg overflow-x-auto max-h-96 whitespace-pre-wrap"
+          >
+...</pre
+          >
+        </div>
+      </motion-div>
+    </div>
+
+    <script>
+      const { motion } = window.framerMotion;
+
+      const containerVariants = {
+        hidden: { opacity: 0, y: 30 },
+        visible: {
+          opacity: 1,
+          y: 0,
+          transition: {
+            staggerChildren: 0.2,
+            duration: 0.5,
+            ease: "easeOut",
+          },
+        },
+      };
+
+      async function uploadAndTranscribe() {
+        const fileInput = document.getElementById("audioFile");
+        const file = fileInput.files[0];
+
+        if (!file) {
+          alert("Please select an audio file.");
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        document.getElementById("transcript").textContent =
+          "⏳ Uploading and transcribing...";
+        document.getElementById("feedback").textContent = "...";
+
+        const res = await fetch("/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        const data = await res.json();
+        const transcript = data.transcript;
+        document.getElementById("transcript").textContent = transcript;
+
+        const prompt = `
+You are a professional, unbiased interview coach.
+
+Please objectively analyze the following job interview transcript. Your feedback should focus on the candidate’s:
+1. Clarity of answers
+2. Confidence and tone (without assumptions about accent or gender)
+3. Communication skills
+4. Technical or content accuracy
+5. Overall impression and actionable suggestions
+
+⚠️ Avoid any assumptions based on accent, gender, tone, or cultural background. Focus strictly on the candidate’s language, reasoning, and performance.
+
+Transcript:
+"""
+${transcript}
+"""
+
+Provide your feedback in clear bullet points under each category.
+`;
+
+
+        document.getElementById("feedback").textContent =
+          "💭 Generating feedback...";
+
+        const feedback = await puter.ai.chat(prompt, { model: "gpt-4o" });
+        document.getElementById("feedback").textContent = feedback;
+      }
+    </script>
+  </body>
+</html>
